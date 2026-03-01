@@ -116,7 +116,7 @@ class NotificationChannel(str, enum.Enum):
 class Organization(Base):
     __tablename__ = "organizations"
     
-    id = Column(String, primary_key=True, default=lambda: f"org_{func.random(16)}")
+    id = Column(String, primary_key=True, default=lambda: "org_" + secrets.token_hex(8))
     name = Column(String, nullable=False)
     slug = Column(String, unique=True, nullable=False)
     phone = Column(String, nullable=False)
@@ -138,15 +138,26 @@ class Organization(Base):
 class Member(Base):
     __tablename__ = "members"
     
-    id = Column(String, primary_key=True, default=lambda: f"mem_{func.random(16)}")
+    id = Column(String, primary_key=True, default=lambda: "mem_" + secrets.token_hex(8))
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=False)
-    user_id = Column(String)
+    user_id = Column(String)  # Can store password hash or external auth ID
     phone = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=True)
     role = Column(SQLEnum(MemberRole), default=MemberRole.MEMBER)
     contribution_tier = Column(String, default="regular")
     mpesa_linked = Column(Boolean, default=False)
     mpesa_phone = Column(String)
+    
+    # Profile fields
+    bio = Column(Text, nullable=True)
+    date_of_birth = Column(String, nullable=True)
+    gender = Column(String, nullable=True)  # male, female, other
+    location = Column(String, nullable=True)
+    occupation = Column(String, nullable=True)
+    emergency_contact_name = Column(String, nullable=True)
+    emergency_contact_phone = Column(String, nullable=True)
+    profile_photo_url = Column(String, nullable=True)
     
     created_at = Column(DateTime, server_default=func.now())
     
@@ -158,7 +169,7 @@ class Member(Base):
 class Contribution(Base):
     __tablename__ = "contributions"
     
-    id = Column(String, primary_key=True, default=lambda: f"con_{func.random(16)}")
+    id = Column(String, primary_key=True, default=lambda: "con_" + secrets.token_hex(8))
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=False)
     member_id = Column(String, ForeignKey("members.id"), nullable=False)
     amount = Column(String, nullable=False)
@@ -178,7 +189,7 @@ class Contribution(Base):
 class Loan(Base):
     __tablename__ = "loans"
     
-    id = Column(String, primary_key=True, default=lambda: f"lon_{func.random(16)}")
+    id = Column(String, primary_key=True, default=lambda: "lon_" + secrets.token_hex(8))
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=False)
     member_id = Column(String, ForeignKey("members.id"), nullable=False)
     amount = Column(String, nullable=False)
@@ -211,7 +222,7 @@ class LoanRepayment(Base):
 class Proposal(Base):
     __tablename__ = "proposals"
     
-    id = Column(String, primary_key=True, default=lambda: f"prp_{func.random(16)}")
+    id = Column(String, primary_key=True, default=lambda: "prp_" + secrets.token_hex(8))
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=False)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
@@ -789,3 +800,11 @@ __all__ = [
     # Additional
     "StandingOrder", "NextOfKin", "Fine",
 ]
+
+
+# ============ ID Generator ============
+import secrets
+
+def generate_id(prefix: str) -> str:
+    """Generate a unique ID with prefix"""
+    return f"{prefix}_{secrets.token_hex(8)}"

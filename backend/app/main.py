@@ -57,11 +57,13 @@ from app.api.v1.endpoints import (
     proposals, organizations, attendance, notifications,
     uploads, reports, fines, calculator, export, webhooks,
     standing_orders, next_of_kin, bulk, announcements,
-    analytics, meeting_notices, guarantors
+    analytics, meeting_notices, guarantors,
+    auth_profile
 )
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(auth_profile.router, prefix="", tags=["auth-profile"])
 app.include_router(members.router, prefix="/api/v1/members", tags=["members"])
 app.include_router(contributions.router, prefix="/api/v1/contributions", tags=["contributions"])
 app.include_router(loans.router, prefix="/api/v1/loans", tags=["loans"])

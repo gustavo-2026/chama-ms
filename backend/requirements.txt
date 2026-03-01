@@ -32,3 +32,6 @@ aiofiles>=24.1.0
 
 # Encryption
 cryptography>=44.0.0
+pyotp>=2.9.0
+bcrypt>=4.0.0
+aiofiles>=24.1.0
