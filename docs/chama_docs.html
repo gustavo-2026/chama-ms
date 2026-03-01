@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chama Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1 { color: #7C3AED; border-bottom: 2px solid #7C3AED; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 30px; }
+        h3 { color: #555; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #7C3AED; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .check { color: green; }
+    </style>
+</head>
+<body>
+<h1>Chama - Kenyan Savings Group Management Platform</h1>
+<br>
+<h2>Comprehensive Technical Documentation</h2>
+<br>
+<p>**Version:** 1.0.0</p>
+<p>**Last Updated:** March 2026</p>
+<p>**Repository:** https://github.com/gustavo-2026/chama</p>
+<br>
+<p>---</p>
+<br>
+<h2>Table of Contents</h2>
+<br>
+<p>1. [Overview](#overview)</p>
+<p>2. [Technology Stack](#technology-stack)</p>
+<p>3. [API Endpoints](#api-endpoints)</p>
+<p>4. [Database Models](#database-models)</p>
+<p>5. [Authentication & Security](#authentication--security)</p>
+<p>6. [Features](#features)</p>
+<p>7. [Integration](#integration)</p>
+<p>8. [Getting Started](#getting-started)</p>
+<br>
+<p>---</p>
+<br>
+<h2>Overview</h2>
+<br>
+<p>Chama is a comprehensive platform for managing Kenyan Savings Groups (Chamas). It provides a complete solution for group savings, loans, investments, and financial management with built-in compliance and reporting features.</p>
+<br>
+<h3>Core Capabilities</h3>
+<li>Multi-member chama management</li>
+<li>Contribution tracking (M-Pesa, Cash, Bank)</li>
+<li>Loan management with guarantor support</li>
+<li>Treasury dashboard and financial reports</li>
+<li>Inter-chama lending (federations)</li>
+<li>Push, Email, and SMS notifications</li>
+<li>Compliance and audit trails</li>
+<br>
+<p>---</p>
+<br>
+<h2>Technology Stack</h2>
+<br>
+<table>
+<tr><td>Component</td><td>Technology</td></tr>
+</tbody></table>
+<table><tr><td>-----------</td><td>------------</td></tr></table>
+<tr><td>**Backend**</td><td>FastAPI (Python 3.12)</td></tr>
+<tr><td>**Database**</td><td>PostgreSQL 15 / SQLite (dev)</td></tr>
+<tr><td>**Cache/Sessions**</td><td>Redis 7</td></tr>
+<tr><td>**Authentication**</td><td>JWT + OTP + 2FA</td></tr>
+<tr><td>**SMS**</td><td>Africa's Talking</td></tr>
+<tr><td>**Payments**</td><td>M-Pesa (Daraja API)</td></tr>
+<tr><td>**Container**</td><td>Docker + Docker Compose</td></tr>
+<br>
+</tbody></table>
+<br>
+<h2>API Endpoints</h2>
+<br>
+<h3>Total: 170+ Endpoints</h3>
+<br>
+<p>#### Authentication & Profile (12 endpoints)</p>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/auth/register-password`</td><td>POST</td><td>Register with email/password</td></tr>
+<tr><td>`/auth/login-password`</td><td>POST</td><td>Login with credentials</td></tr>
+<tr><td>`/auth/change-password`</td><td>POST</td><td>Change password</td></tr>
+<tr><td>`/auth/refresh`</td><td>POST</td><td>Refresh JWT token</td></tr>
+<tr><td>`/auth/logout`</td><td>POST</td><td>Logout user</td></tr>
+<tr><td>`/profile`</td><td>GET</td><td>Get current user profile</td></tr>
+<tr><td>`/profile`</td><td>PATCH</td><td>Update profile</td></tr>
+<tr><td>`/profile/photo`</td><td>POST</td><td>Upload profile photo</td></tr>
+<tr><td>`/profile/login-history`</td><td>GET</td><td>View login history</td></tr>
+<tr><td>`/profile/2fa/enable`</td><td>POST</td><td>Enable 2FA</td></tr>
+<tr><td>`/profile/2fa/disable`</td><td>POST</td><td>Disable 2FA</td></tr>
+<tr><td>`/profile/2fa/status`</td><td>GET</td><td>Check 2FA status</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/members`</td><td>GET</td><td>List all members</td></tr>
+<tr><td>`/members`</td><td>POST</td><td>Add new member</td></tr>
+<tr><td>`/members/{id}`</td><td>GET</td><td>Get member details</td></tr>
+<tr><td>`/members/{id}`</td><td>PATCH</td><td>Update member</td></tr>
+<tr><td>`/members/{id}`</td><td>DELETE</td><td>Remove member</td></tr>
+<tr><td>`/import/members-csv`</td><td>POST</td><td>Bulk import from CSV</td></tr>
+<tr><td>`/import/members-json`</td><td>POST</td><td>Bulk import from JSON</td></tr>
+<tr><td>`/export/members`</td><td>GET</td><td>Export members</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/contributions`</td><td>GET</td><td>List contributions</td></tr>
+<tr><td>`/contributions`</td><td>POST</td><td>Add contribution</td></tr>
+<tr><td>`/contributions/{id}`</td><td>GET</td><td>Get contribution</td></tr>
+<tr><td>`/contributions/summary`</td><td>GET</td><td>Contribution summary</td></tr>
+<tr><td>`/contributions/by-member`</td><td>GET</td><td>By member</td></tr>
+<tr><td>`/contributions/by-period`</td><td>GET</td><td>By time period</td></tr>
+<tr><td>`/contributions/leaderboard`</td><td>GET</td><td>Top contributors</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/loans`</td><td>GET</td><td>List loans</td></tr>
+<tr><td>`/loans`</td><td>POST</td><td>Apply for loan</td></tr>
+<tr><td>`/loans/{id}`</td><td>GET</td><td>Get loan details</td></tr>
+<tr><td>`/loans/{id}/approve`</td><td>POST</td><td>Approve loan</td></tr>
+<tr><td>`/loans/{id}/reject`</td><td>POST</td><td>Reject loan</td></tr>
+<tr><td>`/loans/{id}/repay`</td><td>POST</td><td>Record repayment</td></tr>
+<tr><td>`/loans/{id}/guarantors`</td><td>GET</td><td>List guarantors</td></tr>
+<tr><td>`/loans/{id}/guarantors`</td><td>POST</td><td>Add guarantor</td></tr>
+<tr><td>`/calculator/amortization`</td><td>GET</td><td>Loan amortization</td></tr>
+<tr><td>`/calculator/eligibility`</td><td>GET</td><td>Check eligibility</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/mpesa/stk-push`</td><td>POST</td><td>STK Push payment</td></tr>
+<tr><td>`/mpesa/b2c`</td><td>POST</td><td>B2C disbursement</td></tr>
+<tr><td>`/mpesa/callback`</td><td>POST</td><td>M-Pesa webhook</td></tr>
+<tr><td>`/mpesa/register-urls`</td><td>POST</td><td>Register callbacks</td></tr>
+<tr><td>`/mpesa/transactions`</td><td>GET</td><td>Transaction history</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/treasury/summary`</td><td>GET</td><td>Treasury overview</td></tr>
+<tr><td>`/treasury/cashflow`</td><td>GET</td><td>Cash flow report</td></tr>
+<tr><td>`/treasury/outstanding-loans`</td><td>GET</td><td>Outstanding loans</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/proposals`</td><td>GET</td><td>List proposals</td></tr>
+<tr><td>`/proposals`</td><td>POST</td><td>Create proposal</td></tr>
+<tr><td>`/proposals/{id}`</td><td>GET</td><td>Get proposal</td></tr>
+<tr><td>`/proposals/{id}/publish`</td><td>POST</td><td>Publish for voting</td></tr>
+<tr><td>`/proposals/{id}/vote`</td><td>POST</td><td>Cast vote</td></tr>
+<tr><td>`/proposals/{id}/results`</td><td>GET</td><td>Voting results</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/attendance/meetings`</td><td>GET</td><td>List meetings</td></tr>
+<tr><td>`/attendance/meetings`</td><td>POST</td><td>Schedule meeting</td></tr>
+<tr><td>`/attendance/checkin`</td><td>POST</td><td>Check in member</td></tr>
+<tr><td>`/attendance/report`</td><td>GET</td><td>Attendance report</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/notifications`</td><td>GET</td><td>List notifications</td></tr>
+<tr><td>`/notifications`</td><td>POST</td><td>Create notification</td></tr>
+<tr><td>`/notifications/{id}/read`</td><td>POST</td><td>Mark as read</td></tr>
+<tr><td>`/push/register`</td><td>POST</td><td>Register device token</td></tr>
+<tr><td>`/push/send`</td><td>POST</td><td>Send push notification</td></tr>
+<tr><td>`/email/send`</td><td>POST</td><td>Send email</td></tr>
+<tr><td>`/sms/send`</td><td>POST</td><td>Send bulk SMS</td></tr>
+<tr><td>`/scheduled-reports`</td><td>GET</td><td>List scheduled reports</td></tr>
+<tr><td>`/scheduled-reports`</td><td>POST</td><td>Create scheduled report</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/reports/pdf`</td><td>GET</td><td>Generate PDF report</td></tr>
+<tr><td>`/reports/tax`</td><td>GET</td><td>Tax report</td></tr>
+<tr><td>`/reports/audit`</td><td>GET</td><td>Audit export</td></tr>
+<tr><td>`/reports/annual`</td><td>GET</td><td>Annual statement</td></tr>
+<tr><td>`/export/contributions`</td><td>GET</td><td>Export contributions</td></tr>
+<tr><td>`/export/loans`</td><td>GET</td><td>Export loans</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/budget-categories`</td><td>GET</td><td>List categories</td></tr>
+<tr><td>`/budget-categories`</td><td>POST</td><td>Create category</td></tr>
+<tr><td>`/budgets`</td><td>GET</td><td>List budgets</td></tr>
+<tr><td>`/budgets`</td><td>POST</td><td>Create budget</td></tr>
+<tr><td>`/budgets/vs-actual`</td><td>GET</td><td>Budget vs Actual</td></tr>
+<tr><td>`/expenses`</td><td>GET</td><td>List expenses</td></tr>
+<tr><td>`/expenses`</td><td>POST</td><td>Submit expense</td></tr>
+<tr><td>`/expenses/{id}/approve`</td><td>POST</td><td>Approve expense</td></tr>
+<tr><td>`/expenses/{id}/reject`</td><td>POST</td><td>Reject expense</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/assets`</td><td>GET</td><td>List assets</td></tr>
+<tr><td>`/assets`</td><td>POST</td><td>Add asset</td></tr>
+<tr><td>`/assets/{id}`</td><td>GET</td><td>Get asset</td></tr>
+<tr><td>`/assets/{id}`</td><td>PATCH</td><td>Update asset</td></tr>
+<tr><td>`/assets/summary`</td><td>GET</td><td>Asset summary</td></tr>
+<tr><td>`/investments`</td><td>GET</td><td>List investments</td></tr>
+<tr><td>`/investments`</td><td>POST</td><td>Add investment</td></tr>
+<tr><td>`/investments/summary`</td><td>GET</td><td>Investment summary</td></tr>
+<tr><td>`/investments/{id}/returns`</td><td>POST</td><td>Record return</td></tr>
+<tr><td>`/investments/{id}/close`</td><td>POST</td><td>Close investment</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/federations`</td><td>GET</td><td>List federations</td></tr>
+<tr><td>`/federations`</td><td>POST</td><td>Create federation</td></tr>
+<tr><td>`/federations/{id}/join`</td><td>POST</td><td>Join federation</td></tr>
+<tr><td>`/federations/{id}/members`</td><td>GET</td><td>Federation members</td></tr>
+<tr><td>`/federations/{id}/treasury`</td><td>GET</td><td>Federation treasury</td></tr>
+<tr><td>`/my-federations`</td><td>GET</td><td>My federations</td></tr>
+<tr><td>`/inter-lending`</td><td>GET</td><td>List inter-chama loans</td></tr>
+<tr><td>`/inter-lending`</td><td>POST</td><td>Request loan</td></tr>
+<tr><td>`/inter-lending/{id}/approve`</td><td>POST</td><td>Approve loan</td></tr>
+<tr><td>`/inter-lending/{id}/disburse`</td><td>POST</td><td>Disburse loan</td></tr>
+<tr><td>`/inter-lending/{id}/repay`</td><td>POST</td><td>Repay loan</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/compliance/dashboard`</td><td>GET</td><td>Compliance dashboard</td></tr>
+<tr><td>`/compliance/audit-trail`</td><td>GET</td><td>Audit trail</td></tr>
+<tr><td>`/compliance/member-registers`</td><td>GET</td><td>Member register</td></tr>
+<tr><td>`/compliance/financial-summary`</td><td>GET</td><td>Financial summary</td></tr>
+<tr><td>`/audit-logs`</td><td>GET</td><td>Search audit logs</td></tr>
+<tr><td>`/audit-logs/summary`</td><td>GET</td><td>Audit summary</td></tr>
+<tr><td>`/audit-logs/export`</td><td>GET</td><td>Export audit logs</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/backup`</td><td>GET</td><td>Create backup</td></tr>
+<tr><td>`/backup/download`</td><td>GET</td><td>Download backup</td></tr>
+<tr><td>`/restore`</td><td>POST</td><td>Restore from backup</td></tr>
+<tr><td>`/restore/validate`</td><td>GET</td><td>Validate backup</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/analytics/overview`</td><td>GET</td><td>Dashboard overview</td></tr>
+<tr><td>`/analytics/member-activity`</td><td>GET</td><td>Activity over time</td></tr>
+<tr><td>`/analytics/retention`</td><td>GET</td><td>Retention metrics</td></tr>
+<tr><td>`/analytics/top-contributors`</td><td>GET</td><td>Top contributors</td></tr>
+<tr><td>`/analytics/financial-ratios`</td><td>GET</td><td>Financial ratios</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/search`</td><td>GET</td><td>Full-text search</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/api-keys`</td><td>GET</td><td>List API keys</td></tr>
+<tr><td>`/api-keys`</td><td>POST</td><td>Create API key</td></tr>
+<tr><td>`/api-keys/{id}`</td><td>DELETE</td><td>Revoke key</td></tr>
+<tr><td>`/api-keys/verify`</td><td>POST</td><td>Verify key</td></tr>
+<tr><td>`/ip-whitelist`</td><td>GET</td><td>List IP whitelist</td></tr>
+<tr><td>`/ip-whitelist`</td><td>POST</td><td>Add IP</td></tr>
+<tr><td>`/ip-whitelist/{id}`</td><td>DELETE</td><td>Remove IP</td></tr>
+<tr><td>`/2fa/status`</td><td>GET</td><td>2FA status</td></tr>
+<tr><td>`/2fa/enable`</td><td>POST</td><td>Enable 2FA</td></tr>
+<tr><td>`/2fa/disable`</td><td>POST</td><td>Disable 2FA</td></tr>
+<br>
+</tbody></table>
+<br>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+<tbody>
+</tbody></table>
+<table><tr><td>----------</td><td>--------</td><td>-------------</td></tr></table>
+<tr><td>`/templates`</td><td>GET</td><td>List templates</td></tr>
+<tr><td>`/templates/{id}`</td><td>GET</td><td>Get template</td></tr>
+<tr><td>`/templates`</td><td>POST</td><td>Create template</td></tr>
+<tr><td>`/organizations`</td><td>GET</td><td>List organizations</td></tr>
+<tr><td>`/organizations`</td><td>POST</td><td>Create organization</td></tr>
+<tr><td>`/organizations/{id}`</td><td>GET</td><td>Get organization</td></tr>
+<br>
+</tbody></table>
+<br>
+<li>Fines management (CRUD)</li>
+<li>Standing orders (auto-contributions)</li>
+<li>Next of kin (beneficiaries)</li>
+<li>Bulk disbursements</li>
+<li>Announcements</li>
+<li>Meeting notices</li>
+<li>Webhooks</li>
+<li>Uploads</li>
+<li>Health checks</li>
+<br>
+<p>---</p>
+<br>
+<h2>Database Models</h2>
+<br>
+<h3>Core Models</h3>
+<br>
+<table>
+<tr><td>Model</td><td>Description</td></tr>
+</tbody></table>
+<table><tr><td>-------</td><td>-------------</td></tr></table>
+<tr><td>`Organization`</td><td>Chama organization</td></tr>
+<tr><td>`Member`</td><td>Member with profile</td></tr>
+<tr><td>`Contribution`</td><td>Member contributions</td></tr>
+<tr><td>`Loan`</td><td>Member loans</td></tr>
+<tr><td>`LoanRepayment`</td><td>Loan repayments</td></tr>
+<tr><td>`Proposal`</td><td>Group proposals</td></tr>
+<tr><td>`Vote`</td><td>Proposal votes</td></tr>
+<br>
+<h3>Extended Models</h3>
+<br>
+<tr><td>Model</td><td>Description</td></tr>
+</tbody></table>
+<table><tr><td>-------</td><td>-------------</td></tr></table>
+<tr><td>`Meeting`</td><td>Scheduled meetings</td></tr>
+<tr><td>`Attendance`</td><td>Meeting attendance</td></tr>
+<tr><td>`Announcement`</td><td>Group announcements</td></tr>
+<tr><td>`MeetingNotice`</td><td>Meeting reminders</td></tr>
+<tr><td>`LoanGuarantor`</td><td>Loan guarantors</td></tr>
+<tr><td>`BudgetCategory`</td><td>Budget categories</td></tr>
+<tr><td>`Budget`</td><td>Monthly budgets</td></tr>
+<tr><td>`Expense`</td><td>Expense claims</td></tr>
+<tr><td>`Asset`</td><td>Group assets</td></tr>
+<tr><td>`AssetValuation`</td><td>Asset valuations</td></tr>
+<tr><td>`Investment`</td><td>Group investments</td></tr>
+<tr><td>`InvestmentReturn`</td><td>Investment returns</td></tr>
+<tr><td>`Federation`</td><td>Chama federation</td></tr>
+<tr><td>`FederationMember`</td><td>Federation members</td></tr>
+<tr><td>`InterChamaLoan`</td><td>Loans between chamas</td></tr>
+<tr><td>`PushToken`</td><td>Device tokens</td></tr>
+<tr><td>`ScheduledReport`</td><td>Auto-reports</td></tr>
+<tr><td>`AuditLog`</td><td>Activity logs</td></tr>
+<tr><td>`APIKey`</td><td>API keys</td></tr>
+<tr><td>`IPWhitelist`</td><td>IP access control</td></tr>
+<tr><td>`TwoFactorSetting`</td><td>2FA settings</td></tr>
+<tr><td>`LoginHistory`</td><td>Login tracking</td></tr>
+<tr><td>`ChamaTemplate`</td><td>Organization templates</td></tr>
+<br>
+</tbody></table>
+<br>
+<h2>Authentication & Security</h2>
+<br>
+<h3>Authentication Methods</h3>
+<br>
+<p>1. **Password-based**</p>
+<li>Registration with phone + password</li>
+<li>Login with credentials</li>
+<li>JWT access tokens (24h expiry)</li>
+<li>Refresh tokens</li>
+<br>
+<p>2. **OTP-based (SMS)**</p>
+<li>Phone login request</li>
+<li>6-digit OTP via SMS</li>
+<li>Token generation on verify</li>
+<br>
+<p>3. **Two-Factor Authentication (2FA)**</p>
+<li>TOTP (Time-based OTP)</li>
+<li>QR code for authenticator apps</li>
+<li>Backup codes support</li>
+<br>
+<h3>Security Features</h3>
+<br>
+<table>
+<tr><td>Feature</td><td>Implementation</td></tr>
+</tbody></table>
+<table><tr><td>---------</td><td>---------------</td></tr></table>
+<tr><td>Password Hashing</td><td>bcrypt</td></tr>
+<tr><td>Token Auth</td><td>JWT (HS256)</td></tr>
+<tr><td>Rate Limiting</td><td>100 requests/minute</td></tr>
+<tr><td>Security Headers</td><td>X-Frame-Options, HSTS, etc.</td></tr>
+<tr><td>API Keys</td><td>Service-to-service auth</td></tr>
+<tr><td>IP Whitelisting</td><td>Per-organization</td></tr>
+<tr><td>Audit Logging</td><td>All actions tracked</td></tr>
+<tr><td>Data Encryption</td><td>Sensitive fields encrypted</td></tr>
+<br>
+</tbody></table>
+<br>
+<h2>Features</h2>
+<br>
+<h3>Financial Management</h3>
+<li>✅ Contribution tracking (Cash, M-Pesa, Bank)</li>
+<li>✅ Loan management with interest calculations</li>
+<li>✅ Budget vs Actual tracking</li>
+<li>✅ Expense management & approval</li>
+<li>✅ Treasury dashboard</li>
+<br>
+<h3>Member Management</h3>
+<li>✅ Member registration & profiles</li>
+<li>✅ Role-based access (Chair, Treasurer, Member, Agent)</li>
+<li>✅ Contribution tiers (regular, silver, gold, platinum)</li>
+<li>✅ Next of kin tracking</li>
+<li>✅ Bulk import (CSV/JSON)</li>
+<br>
+<h3>Loans & Credit</h3>
+<li>✅ Loan applications & approvals</li>
+<li>✅ Guarantor support</li>
+<li>✅ Amortization calculator</li>
+<li>✅ Loan eligibility checks</li>
+<li>✅ Inter-chama lending</li>
+<br>
+<h3>Governance</h3>
+<li>✅ Proposal creation & voting</li>
+<li>✅ Meeting scheduling & attendance</li>
+<li>✅ Announcements & notices</li>
+<li>✅ Minutes management</li>
+<br>
+<h3>Notifications</h3>
+<li>✅ Push notifications (Expo/FCM)</li>
+<li>✅ Email notifications</li>
+<li>✅ SMS (Africa's Talking)</li>
+<li>✅ Scheduled reports</li>
+<br>
+<h3>Compliance</h3>
+<li>✅ Audit trails</li>
+<li>✅ Tax reports</li>
+<li>✅ Annual statements</li>
+<li>✅ Member registers</li>
+<li>✅ Data backup/restore</li>
+<br>
+<h3>Analytics</h3>
+<li>✅ Dashboard overview</li>
+<li>✅ Member activity tracking</li>
+<li>✅ Retention metrics</li>
+<li>✅ Top contributors</li>
+<li>✅ Financial ratios</li>
+<br>
+<h3>Platform Features</h3>
+<li>✅ Multi-chama federations</li>
+<li>✅ White-label templates</li>
+<li>✅ API key management</li>
+<li>✅ IP whitelisting</li>
+<br>
+<p>---</p>
+<br>
+<h2>Integration</h2>
+<br>
+<h3>M-Pesa (Daraja API)</h3>
+<li>STK Push (Paybill)</li>
+<li>B2C (Disbursements)</li>
+<li>C2B (Receive payments)</li>
+<li>Transaction status queries</li>
+<br>
+<h3>Africa's Talking (SMS)</h3>
+<li>OTP delivery</li>
+<li>Bulk SMS</li>
+<li>Delivery reports</li>
+<br>
+<h3>External Services</h3>
+<li>Email (SendGrid, SES)</li>
+<li>Push (Expo, FCM)</li>
+<li>Cloud storage for files</li>
+<br>
+<p>---</p>
+<br>
+<h2>Getting Started</h2>
+<br>
+<h3>Prerequisites</h3>
+<li>Python 3.12+</li>
+<li>PostgreSQL 15 or SQLite</li>
+<li>Redis 7 (optional)</li>
+<br>
+<h3>Installation</h3>
+<br>
+<h1>Clone repository</h1>
+<p>git clone https://github.com/gustavo-2026/chama.git</p>
+<p>cd chama/backend</p>
+<br>
+<h1>Install dependencies</h1>
+<p>pip install -r requirements.txt</p>
+<br>
+<h1>Set environment</h1>
+<p>cp .env.example .env</p>
+<br>
+<h1>Run database migrations</h1>
+<p>alembic upgrade head</p>
+<br>
+<h1>Start server</h1>
+<p>uvicorn app.main:app --reload</p>
+<br>
+<h3>Docker Setup</h3>
+<br>
+<p>cd chama/backend</p>
+<p>docker-compose up -d</p>
+<br>
+<h3>API Documentation</h3>
+<p>Once running, visit:</p>
+<li>Swagger UI: http://localhost:8000/docs</li>
+<li>ReDoc: http://localhost:8000/redoc</li>
+<br>
+<p>---</p>
+<br>
+<h2>Environment Variables</h2>
+<br>
+<table>
+<tr><td>Variable</td><td>Description</td><td>Default</td></tr>
+</tbody></table>
+<table><tr><td>----------</td><td>-------------</td><td>---------</td></tr></table>
+<tr><td>`DATABASE_URL`</td><td>PostgreSQL connection</td><td>sqlite:///chama.db</td></tr>
+<tr><td>`SECRET_KEY`</td><td>JWT signing key</td><td>(required)</td></tr>
+<tr><td>`MPESA_ENV`</td><td>sandbox/production</td><td>sandbox</td></tr>
+<tr><td>`MPESA_CONSUMER_KEY`</td><td>M-Pesa key</td><td>-</td></tr>
+<tr><td>`MPESA_CONSUMER_SECRET`</td><td>M-Pesa secret</td><td>-</td></tr>
+<tr><td>`AT_API_KEY`</td><td>Africa's Talking API key</td><td>-</td></tr>
+<tr><td>`AT_USERNAME`</td><td>Africa's Talking username</td><td>-</td></tr>
+<tr><td>`REDIS_URL`</td><td>Redis connection</td><td>localhost:6379</td></tr>
+<br>
+</tbody></table>
+<br>
+<h2>License</h2>
+<br>
+<p>MIT License</p>
+<br>
+<p>---</p>
+<br>
+<p>*Generated: March 2026*</p>
+<br>
+
+</body>
+</html>
