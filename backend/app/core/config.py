@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Chama API"
     DEBUG: bool = False
     
-    # Database
-    DATABASE_URL: str = "sqlite:///./chama.db"
+    # Database - use TCP with password
+    DATABASE_URL: str = "postgresql://postgres:postgres@127.0.0.1:5432/chama"
     
     # Auth - CRITICAL: Change in production!
     SECRET_KEY: str = "change-me-in-production-min-32-characters"

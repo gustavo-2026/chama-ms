@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chama API Contracts</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.5; }
+        h1 { color: #7C3AED; border-bottom: 3px solid #7C3AED; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 35px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        h3 { color: #555; margin-top: 25px; }
+        code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+        .endpoint { background: #f0f0f0; padding: 10px; border-left: 4px solid #7C3AED; margin: 15px 0; }
+        .method { font-weight: bold; color: #7C3AED; }
+        table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #7C3AED; color: white; }
+    </style>
+</head>
+<body>
+<h1>Chama API Contracts</h1>
+<br>
+<h2>Overview</h2>
+<br>
+<p><strong>Base URL: `http://localhost:8000`</strong></p>
+<p><strong>Version: 1.0.0</strong></p>
+<p><strong>OpenAPI: 3.1.0</strong></p>
+<br>
+<p>---</p>
+<br>
+<h2>Authentication</h2>
+<br>
+<p>All protected endpoints require Bearer token in the Authorization header:</p>
+<br>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<h3>Register User</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /auth/register-password`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"phone": "254712345678",</p>
+<p>"name": "John Doe",</p>
+<p>"password": "password123",</p>
+<p>"email": "john@example.com"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"access_token": "eyJhbGciOiJIUzI1NiIs...",</p>
+<p>"refresh_token": "eyJhbGciOiJIUzI1NiIs...",</p>
+<p>"token_type": "bearer",</p>
+<p>"expires_in": 86400</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Login User</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /auth/login-password`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"username": "254712345678",</p>
+<p>"password": "password123"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"access_token": "eyJhbGciOiJIUzI1NiIs...",</p>
+<p>"refresh_token": "eyJhbGciOiJIUzI1NiIs...",</p>
+<p>"token_type": "bearer",</p>
+<p>"expires_in": 86400</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Get Profile</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /profile`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "mem_123abc",</p>
+<p>"phone": "254712345678",</p>
+<p>"name": "John Doe",</p>
+<p>"email": "john@example.com",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "regular",</p>
+<p>"bio": null,</p>
+<p>"date_of_birth": null,</p>
+<p>"gender": null,</p>
+<p>"location": "Nairobi",</p>
+<p>"occupation": "Developer",</p>
+<p>"emergency_contact_name": "Jane Doe",</p>
+<p>"emergency_contact_phone": "254723456789",</p>
+<p>"profile_photo_url": null,</p>
+<p>"mpesa_linked": false,</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Update Profile</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `PATCH /profile`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"name": "John Updated",</p>
+<p>"bio": "Software developer",</p>
+<p>"location": "Mombasa",</p>
+<p>"occupation": "Senior Developer",</p>
+<p>"emergency_contact_name": "Jane Doe",</p>
+<p>"emergency_contact_phone": "254723456789"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "mem_123abc",</p>
+<p>"phone": "254712345678",</p>
+<p>"name": "John Updated",</p>
+<p>"email": "john@example.com",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "regular",</p>
+<p>"bio": "Software developer",</p>
+<p>"location": "Mombasa",</p>
+<p>"occupation": "Senior Developer",</p>
+<p>...</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Change Password</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /auth/change-password`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"old_password": "oldpassword",</p>
+<p>"new_password": "newpassword123"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Password changed"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Members</h2>
+<br>
+<h3>List Members</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /members`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>[</p>
+<p>{</p>
+<p>"id": "mem_123abc",</p>
+<p>"phone": "254712345678",</p>
+<p>"name": "John Doe",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "regular",</p>
+<p>"mpesa_linked": false,</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>]</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Create Member</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /members`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"phone": "254712345679",</p>
+<p>"name": "Jane Smith",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "gold",</p>
+<p>"mpesa_linked": true,</p>
+<p>"mpesa_phone": "254712345679"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (201):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "mem_456def",</p>
+<p>"phone": "254712345679",</p>
+<p>"name": "Jane Smith",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "gold",</p>
+<p>"mpesa_linked": true,</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Get Member</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /members/{member_id}`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "mem_456def",</p>
+<p>"phone": "254712345679",</p>
+<p>"name": "Jane Smith",</p>
+<p>"role": "MEMBER",</p>
+<p>"contribution_tier": "gold",</p>
+<p>...</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Delete Member</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `DELETE /members/{member_id}`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Member deleted"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Contributions</h2>
+<br>
+<h3>List Contributions</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /contributions`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Query Parameters:</strong></p>
+<p>- `member_id` (optional): Filter by member</p>
+<p>- `status` (optional): PENDING, COMPLETED, FAILED</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>[</p>
+<p>{</p>
+<p>"id": "con_123",</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "5000.00",</p>
+<p>"method": "MPESA",</p>
+<p>"status": "COMPLETED",</p>
+<p>"period_month": "03",</p>
+<p>"period_year": "2026",</p>
+<p>"note": "Monthly contribution",</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>]</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Create Contribution</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /contributions`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "5000.00",</p>
+<p>"method": "MPESA",</p>
+<p>"status": "COMPLETED",</p>
+<p>"period_month": "03",</p>
+<p>"period_year": "2026",</p>
+<p>"note": "Monthly contribution"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (201):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "con_456",</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "5000.00",</p>
+<p>"method": "MPESA",</p>
+<p>"status": "COMPLETED",</p>
+<p>...</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Contribution Summary</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /contributions/summary`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"total": 150000.00,</p>
+<p>"this_month": 50000.00,</p>
+<p>"member_count": 25,</p>
+<p>"average": 6000.00</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Loans</h2>
+<br>
+<h3>List Loans</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /loans`</div>
+<br>
+<p><strong>Query Parameters:</strong></p>
+<p>- `status` (optional): PENDING, APPROVED, REJECTED, ACTIVE, PAID</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>[</p>
+<p>{</p>
+<p>"id": "lon_123",</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "50000.00",</p>
+<p>"interest_rate": "10.00",</p>
+<p>"status": "ACTIVE",</p>
+<p>"purpose": "Business expansion",</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>]</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Apply for Loan</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /loans`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "50000.00",</p>
+<p>"interest_rate": "10.00",</p>
+<p>"purpose": "Business expansion",</p>
+<p>"duration_months": 6</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (201):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "lon_456",</p>
+<p>"member_id": "mem_123",</p>
+<p>"amount": "50000.00",</p>
+<p>"interest_rate": "10.00",</p>
+<p>"status": "PENDING",</p>
+<p>"purpose": "Business expansion",</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Approve Loan</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /loans/{loan_id}/approve`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Loan approved"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Reject Loan</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /loans/{loan_id}/reject`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Loan rejected"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Repay Loan</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /loans/{loan_id}/repay`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"amount": "10000.00",</p>
+<p>"method": "MPESA"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Repayment recorded",</p>
+<p>"remaining_balance": 45000.00</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Loan Calculator - Amortization</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /calculator/amortization`</div>
+<br>
+<p><strong>Query Parameters:</strong></p>
+<p>- `principal`: Loan amount (required)</p>
+<p>- `rate`: Annual interest rate (required)</p>
+<p>- `months`: Duration in months (required)</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"monthly_payment": 8765.00,</p>
+<p>"total_interest": 2590.00,</p>
+<p>"total_payment": 52590.00,</p>
+<p>"schedule": [</p>
+<p>{</p>
+<p>"month": 1,</p>
+<p>"payment": 8765.00,</p>
+<p>"principal": 7448.00,</p>
+<p>"interest": 1317.00,</p>
+<p>"balance": 45000.00</p>
+<p>}</p>
+<p>]</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Treasury</h2>
+<br>
+<h3>Treasury Summary</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /treasury/summary`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"total_contributions": 500000.00,</p>
+<p>"total_loans_disbursed": 200000.00,</p>
+<p>"totalstanding": 150000.00,</p>
+<p>_loans_out  "available_funds": 350000.00,</p>
+<p>"member_count": 25,</p>
+<p>"active_loans": 10</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Proposals</h2>
+<br>
+<h3>List Proposals</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /proposals`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>[</p>
+<p>{</p>
+<p>"id": "prp_123",</p>
+<p>"title": "Annual Trip",</p>
+<p>"description": "Plan for annual team building",</p>
+<p>"proposal_type": "EVENT",</p>
+<p>"status": "VOTING",</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>]</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Create Proposal</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /proposals`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"title": "Annual Trip",</p>
+<p>"description": "Plan for annual team building",</p>
+<p>"proposal_type": "EVENT",</p>
+<p>"voting_days": 7</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (201):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"id": "prp_456",</p>
+<p>"title": "Annual Trip",</p>
+<p>"description": "Plan for annual team building",</p>
+<p>"proposal_type": "EVENT",</p>
+<p>"status": "DRAFT",</p>
+<p>...</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Publish Proposal</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /proposals/{proposal_id}/publish`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Proposal published for voting"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Vote on Proposal</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /proposals/{proposal_id}/vote`</div>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"choice": "yes"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Vote recorded"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Notifications</h2>
+<br>
+<h3>List Notifications</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /notifications`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>[</p>
+<p>{</p>
+<p>"id": "notif_123",</p>
+<p>"type": "GENERAL",</p>
+<p>"title": "New Announcement",</p>
+<p>"message": "Meeting scheduled for next week",</p>
+<p>"is_read": false,</p>
+<p>"created_at": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>]</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Mark as Read</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /notifications/{notification_id}/read`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "Notification marked as read"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Analytics</h2>
+<br>
+<h3>Overview</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /analytics/overview`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"total_members": 25,</p>
+<p>"participation_rate": 85.0,</p>
+<p>"total_contributions": 500000.00,</p>
+<p>"active_loans": 10,</p>
+<p>"total_outstanding": 150000.00,</p>
+<p>"available": 350000.00</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Member Activity</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /analytics/member-activity`</div>
+<br>
+<p><strong>Query Parameters:</strong></p>
+<p>- `days`: Number of days (default: 30)</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"contributions": [</p>
+<p>{"date": "2026-03-01", "count": 15, "total": 75000.00}</p>
+<p>],</p>
+<p>"loans": [</p>
+<p>{"date": "2026-03-01", "count": 2, "total": 100000.00}</p>
+<p>]</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Compliance</h2>
+<br>
+<h3>Dashboard</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /compliance/dashboard`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"report_date": "2026-03-01T10:00:00",</p>
+<p>"member_compliance": {</p>
+<p>"total_registered_members": 25,</p>
+<p>"status": "compliant"</p>
+<p>},</p>
+<p>"financial_compliance": {</p>
+<p>"total_contributions": 500000.00,</p>
+<p>"status": "compliant"</p>
+<p>},</p>
+<p>"overall_status": "compliant"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Member Registers</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /compliance/member-registers`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"organization_id": "org_123",</p>
+<p>"total_members": 25,</p>
+<p>"register": [</p>
+<p>{</p>
+<p>"member_id": "mem_123",</p>
+<p>"name": "John Doe",</p>
+<p>"phone": "254712345678",</p>
+<p>"role": "MEMBER",</p>
+<p>"total_contributed": 50000.00,</p>
+<p>"status": "active"</p>
+<p>}</p>
+<p>]</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Search</h2>
+<br>
+<h3>Global Search</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /search`</div>
+<br>
+<p><strong>Query Parameters:</strong></p>
+<p>- `q`: Search query (required, min 2 chars)</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"members": [</p>
+<p>{"id": "mem_123", "name": "John Doe", "phone": "254712345678"}</p>
+<p>],</p>
+<p>"contributions": [],</p>
+<p>"loans": [],</p>
+<p>"proposals": []</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>2FA</h2>
+<br>
+<h3>Enable 2FA</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /profile/2fa/enable`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"secret": "JBSWY3DPEHPK3PXP",</p>
+<p>"qr_uri": "otpauth://totp/John%20Doe?secret=JBSWY3DPEHPK3PXP&issuer=Chama"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Disable 2FA</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `POST /profile/2fa/disable`</div>
+<br>
+<p><strong>Headers:</strong></p>
+<p>```</p>
+<p>Authorization: Bearer <access_token></p>
+<p>```</p>
+<br>
+<p><strong>Request Body:</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"code": "123456"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"message": "2FA disabled"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Health</h2>
+<br>
+<h3>Health Check</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /health`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"status": "healthy",</p>
+<p>"timestamp": "2026-03-01T10:00:00",</p>
+<p>"version": "1.0.0"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h3>Readiness Check</h3>
+<br>
+<div class='endpoint'>**Endpoint:** `GET /health/ready`</div>
+<br>
+<p><strong>Response (200):</strong></p>
+<p>```json</p>
+<p>{</p>
+<p>"status": "ready",</p>
+<p>"database": "ready",</p>
+<p>"timestamp": "2026-03-01T10:00:00"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Error Responses</h2>
+<br>
+<p>All endpoints may return the following error responses:</p>
+<br>
+<h3>400 Bad Request</h3>
+<p>```json</p>
+<p>{</p>
+<p>"detail": "Invalid request body"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<h3>401 Unauthorized</h3>
+<p>```json</p>
+<p>{</p>
+<p>"detail": "Not authenticated"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<h3>403 Forbidden</h3>
+<p>```json</p>
+<p>{</p>
+<p>"detail": "Not authorized"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<h3>404 Not Found</h3>
+<p>```json</p>
+<p>{</p>
+<p>"detail": "Resource not found"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<h3>500 Internal Server Error</h3>
+<p>```json</p>
+<p>{</p>
+<p>"detail": "Internal server error"</p>
+<p>}</p>
+<p>```</p>
+<br>
+<p>---</p>
+<br>
+<h2>Data Types</h2>
+<br>
+<h3>Enums</h3>
+<br>
+<p>| Enum | Values |</p>
+<p>|------|--------|</p>
+<p>| MemberRole | MEMBER, TREASURER, CHAIR, AGENT |</p>
+<p>| ContributionMethod | CASH, MPESA, BANK |</p>
+<p>| TransactionStatus | PENDING, COMPLETED, FAILED, CANCELLED |</p>
+<p>| LoanStatus | PENDING, APPROVED, REJECTED, ACTIVE, PAID |</p>
+<p>| ProposalStatus | DRAFT, PUBLISHED, VOTING, PASSED, REJECTED |</p>
+<br>
+<p>---</p>
+<br>
+<p>*Generated: March 2026*</p>
+<br>
+</body></html>
