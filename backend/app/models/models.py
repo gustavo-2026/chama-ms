@@ -820,7 +820,7 @@ class MarketplaceSettings(Base):
     
     # Fee settings
     platform_fee_percent = Column(Numeric(5, 2), default=2.0)  # Platform fee
-    chama_fee_percent = Column(Numeric(5, 2), default=0)  # Chama fee
+    cross_chama_premium = Column(Numeric(5, 2), default=0)  # Premium for cross-chama
     minimum_fee = Column(Numeric(10, 2), default=10.0)
     
     # Features
@@ -847,7 +847,7 @@ class PlatformMarketplaceSettings(Base):
     
     # Platform fee (goes to platform)
     platform_fee_percent = Column(Numeric(5, 2), default=2.0)  # Platform fee
-    chama_fee_percent = Column(Numeric(5, 2), default=0)  # Chama fee
+    cross_chama_premium = Column(Numeric(5, 2), default=0)  # Premium for cross-chama
     minimum_platform_fee = Column(Numeric(10, 2), default=10.0)
     
     # Global settings

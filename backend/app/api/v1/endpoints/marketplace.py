@@ -291,7 +291,7 @@ def create_order(order: OrderCreate, db: Session = Depends(get_db), current: Mem
     if listing.is_affiliate:
         affiliate_commission = subtotal * (float(listing.affiliate_commission or 0) / 100)
     
-    fees = calculate_order_fees(db, subtotal, listing.organization_id, current.organization_id, float(listing.affiliate_commission or 0) if listing.is_affiliate else 0)
+    fees = calculate_cross_chama_fees(db, subtotal, listing.organization_id, current.organization_id, float(listing.affiliate_commission or 0) if listing.is_affiliate else 0)
     
     new_order = MarketplaceOrder(
         buyer_org_id=current.organization_id,
@@ -634,6 +634,7 @@ def get_marketplace_settings(db: Session = Depends(get_db), current: Member = De
     return {
         "platform_fee_percent": 2.0,  # Platform default
         "chama_fee_percent": float(settings.chama_fee_percent) if settings.chama_fee_percent else 0,
+        "cross_chama_premium": float(settings.cross_chama_premium) if settings.cross_chama_premium else 0,
         "minimum_fee": float(settings.minimum_fee),
         "marketplace_enabled": settings.marketplace_enabled,
         "affiliate_enabled": settings.affiliate_enabled,
@@ -647,6 +648,7 @@ def get_marketplace_settings(db: Session = Depends(get_db), current: Member = De
 def update_marketplace_settings(
     platform_fee_percent: float = 0,  # 0 = use platform default
     chama_fee_percent: float = 0,
+    cross_chama_premium: float = 0,
     minimum_fee: float = 10.0,
     marketplace_enabled: bool = True,
     affiliate_enabled: bool = True,
@@ -666,7 +668,8 @@ def update_marketplace_settings(
     
     if settings:
         settings.platform_fee_percent = platform_fee_percent,
-        settings.chama_fee_percent = chama_fee_percent
+        settings.chama_fee_percent = chama_fee_percent,
+        settings.cross_chama_premium = cross_chama_premium
         settings.minimum_fee = minimum_fee
         settings.marketplace_enabled = marketplace_enabled
         settings.affiliate_enabled = affiliate_enabled
@@ -789,3 +792,45 @@ def update_platform_settings(
     
     db.commit()
     return {"message": "Platform settings updated"}
+
+
+def calculate_cross_chama_fees(db: Session, amount: float, seller_org_id: str, buyer_org_id: str, affiliate_rate: float = 0) -> dict:
+    """Calculate fees including cross-chama premium"""
+    
+    # Check if cross-chama transaction
+    is_cross_chama = seller_org_id != buyer_org_id
+    
+    # Get platform fee settings
+    platform_settings = get_platform_fee_settings(db)
+    
+    # Get seller chama settings
+    from app.models.models import MarketplaceSettings
+    chama_settings = db.query(MarketplaceSettings).filter(
+        MarketplaceSettings.organization_id == seller_org_id
+    ).first()
+    
+    # Fee percentages
+    chama_fee_percent = float(chama_settings.chama_fee_percent) if chama_settings and chama_settings.chama_fee_percent else 0
+    cross_chama_premium = float(chama_settings.cross_chama_premium) if chama_settings and chama_settings.cross_chama_premium else 0
+    
+    # Calculate fees
+    platform_fee = max(amount * (platform_settings["platform_fee_percent"] / 100), platform_settings["minimum_platform_fee"])
+    chama_fee = amount * (chama_fee_percent / 100) if chama_fee_percent else 0
+    
+    # Cross-chama premium (goes to seller chama)
+    cross_chama_fee = amount * (cross_chama_premium / 100) if is_cross_chama and cross_chama_premium else 0
+    
+    # Affiliate commission
+    affiliate_commission = amount * (affiliate_rate / 100) if affiliate_rate else 0
+    
+    seller_net = amount - platform_fee - chama_fee - cross_chama_fee - affiliate_commission
+    
+    return {
+        "subtotal": amount,
+        "is_cross_chama": is_cross_chama,
+        "platform_fee": round(platform_fee, 2),
+        "chama_fee": round(chama_fee, 2),  # Goes to seller's chama
+        "cross_chama_premium": round(cross_chama_fee, 2),  # Extra for cross-chama
+        "affiliate_commission": round(affiliate_commission, 2),
+        "seller_net": round(seller_net, 2)
+    }
