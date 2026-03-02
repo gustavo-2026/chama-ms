@@ -60,9 +60,8 @@ from app.api.v1.endpoints import (
     analytics, meeting_notices, guarantors,
     auth_profile,
     marketplace,
-    mpesa_stk, mpesa_stk,
-    mpesa_config,
-    messaging_wallet
+    pesapal, mpesa_stk, mpesa_config,
+    messaging_wallet,
 )
 
 # Include routers
@@ -90,7 +89,8 @@ app.include_router(announcements.router, prefix="/api/v1", tags=["announcements"
 app.include_router(meeting_notices.router, prefix="/api/v1", tags=["meeting-notices"])
 app.include_router(guarantors.router, prefix="/api/v1", tags=["guarantors"])
 app.include_router(marketplace.router, prefix="/api/v1", tags=["marketplace"])
-app.include_router(mpesa_stk.router, prefix="/api/v1", tags=["mpesa-stk"]),
+app.include_router(mpesa_stk.router, prefix="/api/v1", tags=["mpesa-stk"])
+app.include_router(pesapal.router, prefix="/api/v1", tags=["pesapal"])
 app.include_router(mpesa_config.router, prefix="/api/v1", tags=["mpesa-config"])
 app.include_router(messaging_wallet.router, prefix="/api/v1", tags=["messaging-wallet"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])

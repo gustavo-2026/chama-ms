@@ -1,3 +1,4 @@
+import os
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from typing import Optional
@@ -24,6 +25,12 @@ class Settings(BaseSettings):
     MPESA_PASSKEY: Optional[str] = None
     MPESA_CALLBACK_URL: Optional[str] = None
     
+    # Pesapal
+    PESAPAL_CONSUMER_KEY: Optional[str] = None
+    PESAPAL_CONSUMER_SECRET: Optional[str] = None
+    PESAPAL_CALLBACK_URL: Optional[str] = None
+    PESAPAL_DEMO: bool = True
+    
     # Africa's Talking (SMS)
     AT_API_KEY: Optional[str] = None
     AT_USERNAME: Optional[str] = None
@@ -43,6 +50,7 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()
+
 
 
 settings = get_settings()
