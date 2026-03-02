@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # API Gateway (nginx)
+  api-gateway:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - core-service
+      - marketplace-service
+      - payments-service
+      - notifications-service
+      - messaging-service
+
+  # Core Banking Service
+  core-service:
+    build: ./services/core-service
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/chama
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  # Marketplace Service
+  marketplace-service:
+    build: ./services/marketplace-service
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/chama
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  # Payments Service
+  payments-service:
+    build: ./services/payments-service
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/chama
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  # Notifications Service
+  notifications-service:
+    build: ./services/notifications-service
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/chama
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  # Messaging Service (Real-time)
+  messaging-service:
+    build: ./services/messaging-service
+    ports:
+      - "8005:8003"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  # PostgreSQL
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=chama
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis (for caching & pub/sub)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
