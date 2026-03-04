@@ -1,0 +1,8 @@
+{
+  "/events/page": "app/events/page.js",
+  "/monitoring/page": "app/monitoring/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/compare/page": "app/compare/page.js",
+  "/goals/page": "app/goals/page.js",
+  "/dividends/page": "app/dividends/page.js"
+}
