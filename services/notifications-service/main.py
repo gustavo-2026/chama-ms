@@ -119,17 +119,38 @@ def send_sms(request: NotificationRequest):
 
 # ============ Email Notifications ============
 
+AGENTMAIL_API_KEY = os.getenv("AGENTMAIL_API_KEY", "am_us_5d591a7225a989947e3d7bb5b82eec194b1125744d38ff1b67b767ca2961e4ec")
+
 @app.post("/email/send")
 def send_email(request: NotificationRequest):
-    """Send email notification"""
-    # In production: Use SMTP/SendGrid
+    """Send email notification using AgentMail"""
+    import requests
     
-    return {
-        "status": "sent",
-        "to": request.user_id,  # Would resolve to email
-        "subject": request.title,
-        "body": request.body
-    }
+    # Resolve user_id to email (in production, look up from database)
+    to_email = f"{request.user_id}@example.com"
+    
+    try:
+        response = requests.post(
+            "https://api.agentmail.io/v1/send",
+            headers={
+                "Authorization": f"Bearer {AGENTMAIL_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "to": to_email,
+                "subject": request.title,
+                "body": request.body,
+                "from": "noreply@chama.ke"
+            },
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            return {"status": "sent", "provider": "agentmail", "to": to_email}
+        else:
+            return {"status": "failed", "error": response.text}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 # ============ In-App Notifications ============
