@@ -7,10 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine, Column, String, Integer, Float, DateTime, Text, Numeric, func
+from sqlalchemy import create_engine, Column, String, Integer, Float, DateTime, Text, Numeric, func, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 import os
 import jwt
+import uuid
 
 SECRET_KEY = "change-me-in-production-min-32-characters"
 
@@ -153,6 +154,9 @@ class Harambee(Base):
 
 class HarambeeContribution(Base):
     __tablename__ = "harambee_contributions"
+    id = Column(String, primary_key=True, index=True, default=lambda: f"hcont_{uuid.uuid4().hex[:8]}")
+    harambee_id = Column(String, ForeignKey("harambees.id"))
+    member_id = Column(String, ForeignKey("members.id"))
     amount = Column(Numeric)
     created_at = Column(DateTime, default=datetime.utcnow)
 
