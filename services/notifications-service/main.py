@@ -333,3 +333,55 @@ def send_template(template_id: str, user_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8004)
+
+
+# ============ Search (Tavily) ============
+
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "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")
+
+@app.get("/search")
+def search(q: str, max_results: int = 5):
+    """Search the web using Tavily AI"""
+    import requests
+    
+    try:
+        response = requests.post(
+            "https://api.tavily.com/search",
+            json={
+                "api_key": TAVILY_API_KEY,
+                "query": q,
+                "max_results": max_results
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            results = response.json().get("results", [])
+            return {"query": q, "count": len(results), "results": results}
+        else:
+            return {"error": response.text}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.get("/ask")
+def ask(q: str):
+    """Get AI answer from Tavily"""
+    import requests
+    
+    try:
+        response = requests.post(
+            "https://api.tavily.com/qna",
+            json={
+                "api_key": TAVILY_API_KEY,
+                "query": q
+            },
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return {"question": q, "answer": response.json()}
+        else:
+            return {"error": response.text}
+    except Exception as e:
+        return {"error": str(e)}
