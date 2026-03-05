@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chama Microservices Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; color: #333; }
+h1 { color: #1a5276; border-bottom: 3px solid #2980b9; padding-bottom: 15px; }
+h2 { color: #1a5276; margin-top: 35px; border-left: 4px solid #2980b9; padding-left: 12px; }
+h3 { color: #2874a6; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #bdc3c7; padding: 10px; text-align: left; }
+th { background-color: #2980b9; color: white; }
+li { margin: 5px 0; }
+code { background: #ecf0f1; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
+strong { color: #1a5276; }
+</style>
+</head>
+<body>
+<h1>Chama Microservices Architecture</h1>
+
+Comprehensive documentation for the Chama platform microservices.
+
+---
+
+<h2>Overview</h2>
+
+The Chama platform uses a <strong>microservices architecture</strong> with 6 services:
+
+<table>
+<tr><th>Service</th><th>Port</th><th>Purpose</th></tr>
+</table>
+|---------|------|---------|
+<table>
+<tr><th>Core</th><th>8001</th><th>Members, Contributions, Loans, Treasury</th></tr>
+<tr><th>Marketplace</th><th>8002</th><th>Listings, Orders, Escrow</th></tr>
+</table>
+| Payments | 8003 | M-Pesa, Pesapal, Wallet, Escrow |
+| Notifications | 8004 | Push, SMS, Email, In-App |
+| Messaging | 8005 | Real-time WebSocket chat |
+| Kafka Event Bus | 9093 | Event-driven communication |
+
+---
+
+<h2>Architecture Diagram</h2>
+
+<pre><code>                    ┌─────────────────┐
+                    │   API Gateway   │
+                    │    (Nginx)     │
+                    └────────┬────────┘
+                             │
+        ┌──────────┬─────────┼─────────┬──────────┐
+        │          │         │         │          │
+        ▼          ▼         ▼         ▼          ▼
+   ┌────────┐ ┌──────────┐ ┌─────────┐ ┌──────────┐ ┌────────┐
+   │  Core │ │Marketplace│ │Payments│ │ Notif   │ │ Msg   │
+   │ 8001  │ │  8002    │ │  8003  │ │  8004   │ │ 8005  │
+   └───┬────┘ └────┬─────┘ └───┬────┘ └───┬─────┘ └───┬────┘
+       │           │            │          │            │
+       └───────────┴─────┬──────┴──────────┴────────────┘
+                        │
+                 ┌──────▼──────┐
+                 │    Kafka    │
+                 │ Event Bus   │
+                 │   9093      │
+                 └─────────────┘
+                        │
+                 ┌──────▼──────┐
+                 │  PostgreSQL │
+                 │   5432      │
+                 └─────────────┘
+</code></pre>
+
+---
+
+<h2>Core Service (Port 8001)</h2>
+
+<strong>Purpose</strong>: Core banking operations for chama management
+
+<h3>Features</h3>
+
+<li><strong>Member Management</strong>: Join, leave, roles (chairperson, secretary, treasurer, member)</li>
+<li><strong>Contributions</strong>: Track member payments (monthly, daily, custom)</li>
+<li><strong>Loans</strong>: Issue loans, track repayments, interest calculations</li>
+<li><strong>Treasury</strong>: Track chama balance, dividends</li>
+
+<h3>Data Models</h3>
+
+<pre><code>Member:
+  - id, phone, name, email
+  - organization_id (chama_id)
+  - role: CHAIRPERSON | SECRETARY | TREASURER | MEMBER
+  - status: ACTIVE | INACTIVE | SUSPENDED
+
+Contribution:
+  - id, member_id, amount
+  - method: CASH | MPESA | BANK
+  - status: PENDING | COMPLETED | FAILED
+
+Loan:
+  - id, member_id, principal_amount
+  - term_months, interest_rate
+  - status: PENDING | APPROVED | REJECTED | DISBURSED | REPAID
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+</table>
+|--------|----------|-------------|
+<table>
+<tr><th>POST</th><th><code>/members</code></th><th>Create member</th></tr>
+<tr><th>GET</th><th><code>/members/{chama_id}</code></th><th>List chama members</th></tr>
+<tr><th>POST</th><th><code>/contributions</code></th><th>Record contribution</th></tr>
+<tr><th>GET</th><th><code>/contributions/{chama_id}</code></th><th>List contributions</th></tr>
+<tr><th>POST</th><th><code>/loans</code></th><th>Apply for loan</th></tr>
+<tr><th>POST</th><th><code>/loans/{id}/approve</code></th><th>Approve loan</th></tr>
+<tr><th>GET</th><th><code>/treasury/{chama_id}</code></th><th>Get chama balance</th></tr>
+<tr><th>POST</th><th><code>/dividends/calculate</code></th><th>Calculate dividends</th></tr>
+</table>
+
+<h3>Example: Create Member</h3>
+
+<pre><code>curl -X POST http://localhost:8001/members \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "+254712345678",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "organization_id": "chama_001",
+    "role": "MEMBER"
+  }'
+</code></pre>
+
+---
+
+<h2>Marketplace Service (Port 8002)</h2>
+
+<strong>Purpose</strong>: E-commerce marketplace with chama-affiliate system
+
+<h3>Features</h3>
+
+<li><strong>Listings</strong>: Products, services, jobs, housing</li>
+<li><strong>Orders</strong>: Full order lifecycle management</li>
+<li><strong>Escrow</strong>: Funds held until delivery confirmed</li>
+<li><strong>Affiliate Chamas</strong>: Chamas earn fees on member sales</li>
+<li><strong>Reviews</strong>: Buyer ratings and reviews</li>
+
+<h3>Data Models</h3>
+
+<pre><code>Listing:
+  - id, organization_id, member_id
+  - title, description, category
+  - price, status (ACTIVE | SOLD | HIDDEN)
+  - images (JSON array)
+
+Order:
+  - id, listing_id, buyer_id, seller_id
+  - amount, platform_fee, chama_fee
+  - status: PENDING → PAID → SHIPPED → DELIVERED → COMPLETED
+  - escrow_status: HOLDING | RELEASED | REFUNDED
+
+Escrow:
+  - id, order_id, amount
+  - status: PENDING | HELD | RELEASED | DISPUTED
+  - release_date (auto-release after 7 days)
+</code></pre>
+
+<h3>Escrow Flow</h3>
+
+<pre><code>1. Buyer pays → Funds held in escrow
+2. Seller ships → Update order status
+3. Buyer confirms delivery → Release funds to seller
+4. If no confirmation → Auto-release after 7 days
+5. Dispute → Admin intervention required
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+</table>
+|--------|----------|-------------|
+<table>
+<tr><th>POST</th><th><code>/listings</code></th><th>Create listing</th></tr>
+<tr><th>GET</th><th><code>/listings</code></th><th>Search listings</th></tr>
+<tr><th>POST</th><th><code>/orders</code></th><th>Create order</th></tr>
+<tr><th>POST</th><th><code>/orders/{id}/pay</code></th><th>Mark order paid</th></tr>
+<tr><th>POST</th><th><code>/orders/{id}/ship</code></th><th>Mark shipped</th></tr>
+<tr><th>POST</th><th><code>/orders/{id}/deliver</code></th><th>Confirm delivery</th></tr>
+<tr><th>POST</th><th><code>/orders/{id}/complete</code></th><th>Complete (release escrow)</th></tr>
+<tr><th>POST</th><th><code>/orders/{id}/dispute</code></th><th>Open dispute</th></tr>
+<tr><th>GET</th><th><code>/escrow/{order_id}</code></th><th>Get escrow status</th></tr>
+</table>
+
+<h3>Example: Create Listing</h3>
+
+<pre><code>curl -X POST http://localhost:8002/listings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "organization_id": "chama_001",
+    "member_id": "member_123",
+    "title": "Fresh Farm Produce",
+    "description": "Organic vegetables",
+    "category": "PRODUCTS",
+    "price": 1500.00
+  }'
+</code></pre>
+
+---
+
+<h2>Payments Service (Port 8003)</h2>
+
+<strong>Purpose</strong>: Payment processing with M-Pesa and Pesapal
+
+<h3>Features</h3>
+
+<li><strong>M-Pesa Integration</strong>: STK Push (C2B), B2C disbursements</li>
+<li><strong>Pesapal Integration</strong>: Cards, bank transfers</li>
+<li><strong>Wallet</strong>: Internal wallet system</li>
+<li><strong>Unified Checkout</strong>: Single API for all payment methods</li>
+
+<h3>Payment Flow</h3>
+
+<pre><code>1. User selects payment method
+2. Call /checkout → Get payment URL/phone
+3. User completes payment on their device
+4. Provider calls back → Update payment status
+5. Publish event to Kafka → Notify other services
+</code></pre>
+
+<h3>Data Models</h3>
+
+<pre><code>Payment:
+  - id, member_id, amount
+  - provider: MPESA | PESAPAL | WALLET
+  - type: CONTRIBUTION | LOAN_REPAYMENT | MARKETPLACE | WITHDRAWAL
+  - status: PENDING | COMPLETED | FAILED
+  - reference (provider's transaction ID)
+
+Wallet:
+  - member_id, balance
+  - transactions: list of in/out transactions
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+</table>
+|--------|----------|-------------|
+<table>
+<tr><th>GET</th><th><code>/providers</code></th><th>List payment providers</th></tr>
+<tr><th>POST</th><th><code>/checkout</code></th><th>Initiate payment</th></tr>
+</table>
+| POST | <code>/mpesa/stk-push</code> | M-Pesa STK Push |
+| POST | <code>/mpesa/callback</code> | M-Pesa webhook |
+| POST | <code>/pesapal/register-urls</code> | Register IPN |
+<table>
+<tr><th>POST</th><th><code>/pesapal/callback</code></th><th>Pesapal webhook</th></tr>
+<tr><th>POST</th><th><code>/wallet/deposit</code></th><th>Add to wallet</th></tr>
+<tr><th>POST</th><th><code>/wallet/withdraw</code></th><th>Withdraw from wallet</th></tr>
+<tr><th>GET</th><th><code>/wallet/{member_id}</code></th><th>Get balance</th></tr>
+</table>
+
+<h3>M-Pesa STK Push</h3>
+
+<pre><code>curl -X POST http://localhost:8003/mpesa/stk-push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "254712345678",
+    "amount": 1000,
+    "reference": "ORDER_123",
+    "description": "Payment for order"
+  }'
+</code></pre>
+
+<h3>Unified Checkout</h3>
+
+<pre><code>curl -X POST http://localhost:8003/checkout \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 5000,
+    "provider": "mpesa",
+    "type": "CONTRIBUTION",
+    "reference": "CONTRIB_001",
+    "member_id": "member_123"
+  }'
+</code></pre>
+
+<h3>Environment Variables</h3>
+
+<pre><code>MPESA_SHORTCODE=123456
+MPESA_CONSUMER_KEY=your_key
+MPESA_CONSUMER_SECRET=your_secret
+MPESA_PASSKEY=your_passkey
+MPESA_ENV=sandbox
+
+PESAPAL_CONSUMER_KEY=your_key
+PESAPAL_CONSUMER_SECRET=your_secret
+</code></pre>
+
+---
+
+<h2>Notifications Service (Port 8004)</h2>
+
+<strong>Purpose</strong>: Multi-channel notifications
+
+<h3>Features</h3>
+
+<li><strong>Push Notifications</strong>: Firebase/FCM</li>
+<li><strong>SMS</strong>: Bulk SMS capabilities</li>
+<li><strong>Email</strong>: Transactional emails</li>
+<li><strong>In-App</strong>: Real-time notification center</li>
+<li><strong>Batch Notifications</strong>: Send to multiple users</li>
+
+<h3>Data Models</h3>
+
+<pre><code>Notification:
+  - id, user_id, title, body
+  - channel: PUSH | SMS | EMAIL | IN_APP
+  - status: SENT | FAILED | PENDING
+  - created_at
+
+PushToken:
+  - user_id, token, platform (android/ios)
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+</table>
+|--------|----------|-------------|
+<table>
+<tr><th>POST</th><th><code>/push/register</code></th><th>Register FCM token</th></tr>
+<tr><th>POST</th><th><code>/send</code></th><th>Send single notification</th></tr>
+<tr><th>POST</th><th><code>/send/batch</code></th><th>Send to multiple users</th></tr>
+<tr><th>GET</th><th><code>/notifications/{user_id}</code></th><th>Get user notifications</th></tr>
+<tr><th>PUT</th><th><code>/notifications/{id}/read</code></th><th>Mark as read</th></tr>
+</table>
+
+<h3>Example: Send Notification</h3>
+
+<pre><code>curl -X POST http://localhost:8004/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "member_123",
+    "title": "Payment Received",
+    "body": "You received KES 5,000",
+    "channel": "in_app"
+  }'
+</code></pre>
+
+---
+
+<h2>Messaging Service (Port 8005)</h2>
+
+<strong>Purpose</strong>: Real-time chat between users
+
+<h3>Features</h3>
+
+<li><strong>WebSocket</strong>: Real-time bidirectional messaging</li>
+<li><strong>Typing Indicators</strong>: Show when user is typing</li>
+<li><strong>Read Receipts</strong>: Track message reads</li>
+<li><strong>REST API</strong>: Alternative to WebSocket</li>
+
+<h3>WebSocket Connection</h3>
+
+<pre><code>ws://localhost:8005/ws/{JWT_TOKEN}
+</code></pre>
+
+<h3>Message Format (WebSocket)</h3>
+
+<pre><code>// Send message
+{
+  "type": "message",
+  "conversation_id": "conv_123",
+  "content": "Hello!"
+}
+
+// Receive message
+{
+  "type": "message",
+  "data": {
+    "id": "msg_456",
+    "conversation_id": "conv_123",
+    "sender_id": "member_123",
+    "content": "Hello!",
+    "created_at": "2026-03-05T10:00:00"
+  }
+}
+
+// Typing indicator
+{
+  "type": "typing",
+  "sender_id": "member_123",
+  "conversation_id": "conv_123"
+}
+
+// Read receipt
+{
+  "type": "read",
+  "conversation_id": "conv_123",
+  "read_by": "member_456"
+}
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+</table>
+|--------|----------|-------------|
+<table>
+<tr><th>WS</th><th><code>/ws/{token}</code></th><th>WebSocket endpoint</th></tr>
+<tr><th>POST</th><th><code>/conversations</code></th><th>Create conversation</th></tr>
+<tr><th>GET</th><th><code>/conversations/{user_id}</code></th><th>List user conversations</th></tr>
+<tr><th>GET</th><th><code>/conversations/{id}/messages</code></th><th>Get messages</th></tr>
+<tr><th>POST</th><th><code>/conversations/{id}/messages</code></th><th>Send message (REST)</th></tr>
+<tr><th>GET</th><th><code>/unread/{user_id}</code></th><th>Unread count</th></tr>
+</table>
+
+---
+
+<h2>Kafka Event Bus (Port 9093)</h2>
+
+<strong>Purpose</strong>: Event-driven communication between services
+
+<h3>Event Topics</h3>
+
+<table>
+<tr><th>Category</th><th>Event</th><th>Description</th></tr>
+</table>
+|----------|-------|-------------|
+<table>
+<tr><th>Payments</th><th><code>payment.initiated</code></th><th>Payment started</th></tr>
+<tr><th><code>payment.completed</code></th><th>Payment successful</th></tr>
+<tr><th><code>payment.failed</code></th><th>Payment failed</th></tr>
+<tr><th><code>payment.refunded</code></th><th>Payment refunded</th></tr>
+<tr><th>Orders</th><th><code>order.created</code></th><th>New order placed</th></tr>
+<tr><th><code>order.paid</code></th><th>Order paid</th></tr>
+<tr><th><code>order.shipped</code></th><th>Order shipped</th></tr>
+<tr><th><code>order.delivered</code></th><th>Delivered</th></tr>
+<tr><th><code>order.completed</code></th><th>Completed</th></tr>
+<tr><th><code>order.disputed</code></th><th>Dispute opened</th></tr>
+<tr><th>Members</th><th><code>member.joined</code></th><th>New member</th></tr>
+<tr><th><code>member.left</code></th><th>Member removed</th></tr>
+<tr><th>Loans</th><th><code>loan.approved</code></th><th>Loan approved</th></tr>
+<tr><th><code>loan.disbursed</code></th><th>Loan disbursed</th></tr>
+<tr><th><code>loan.repaid</code></th><th>Repayment received</th></tr>
+</table>
+
+<h3>Publishing Events</h3>
+
+<pre><code>curl -X POST http://localhost:9093/events/publish \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "payment.completed",
+    "source": "payments",
+    "payload": {
+      "payment_id": "pay_123",
+      "amount": 5000,
+      "member_id": "member_456"
+    },
+    "correlation_id": "order_789"
+  }'
+</code></pre>
+
+<h3>Subscribing to Events</h3>
+
+<pre><code>curl -X POST http://localhost:9093/events/subscribe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "payment.completed",
+    "callback_url": "http://localhost:8002/webhooks/payment"
+  }'
+</code></pre>
+
+---
+
+<h2>Authentication</h2>
+
+All services use JWT tokens:
+
+<pre><code><h1>Include in headers</h1>
+Authorization: Bearer {JWT_TOKEN}
+
+<h1>Token payload</h1>
+{
+  "sub": "member_123",
+  "chama_id": "chama_001",
+  "role": "MEMBER",
+  "exp": 1700000000
+}
+</code></pre>
+
+---
+
+<h2>Database</h2>
+
+<li><strong>PostgreSQL</strong>: <code>chama_ms</code> on port 5432</li>
+<li>Each service can use its own database or share</li>
+<li>Password: <code>postgres</code></li>
+
+<h3>Schema</h3>
+
+See <code>seed_data.py</code> for full schema creation and sample data.
+
+---
+
+<h2>Running the Services</h2>
+
+<h3>Start All Services</h3>
+
+<pre><code>cd /home/gustavo/.openclaw/workspace/chama-ms
+
+<h1>Core</h1>
+python3 services/core-service/main.py &
+
+<h1>Marketplace</h1>
+python3 services/marketplace-service/main.py &
+
+<h1>Payments</h1>
+python3 services/payments-service/main.py &
+
+<h1>Notifications</h1>
+python3 services/notifications-service/main.py &
+
+<h1>Messaging</h1>
+python3 services/messaging-service/main.py &
+
+<h1>Kafka Event Bus</h1>
+python3 -m uvicorn services.kafka-service.main:app --port 9093 &
+</code></pre>
+
+<h3>Health Checks</h3>
+
+<pre><code>for port in 8001 8002 8003 8004 8005 9093; do
+  curl http://localhost:$port/health
+done
+</code></pre>
+
+---
+
+<h2>Environment Variables</h2>
+
+<pre><code><h1>Database</h1>
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/chama_ms
+
+<h1>JWT</h1>
+SECRET_KEY=change-me-in-production-min-32-characters
+
+<h1>M-Pesa</h1>
+MPESA_SHORTCODE=123456
+MPESA_CONSUMER_KEY=
+MPESA_CONSUMER_SECRET=
+MPESA_PASSKEY=
+MPESA_ENV=sandbox
+
+<h1>Pesapal</h1>
+PESAPAL_CONSUMER_KEY=
+PESAPAL_CONSUMER_SECRET=
+</code></pre>
+
+---
+
+<h2>Future Enhancements</h2>
+
+1. <strong>API Gateway</strong>: Nginx or Kong for rate limiting, auth
+2. <strong>Service Discovery</strong>: Consul or etcd
+3. <strong>Circuit Breaker</strong>: Resilience4j patterns
+4. <strong>Distributed Tracing</strong>: Jaeger
+5. <strong>Metrics</strong>: Prometheus + Grafana
+6. <strong>Real Kafka</strong>: Replace in-memory with actual Kafka cluster
+
+</body>
+</html>
