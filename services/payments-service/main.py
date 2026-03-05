@@ -12,6 +12,9 @@ import base64
 import os
 import jwt
 import uuid
+from sqlalchemy import create_engine, Column, String, Float, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
 
 app = FastAPI(title="Payments Service")
 
@@ -22,6 +25,31 @@ MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
 MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
 MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
 MPESA_ENV = os.getenv("MPESA_ENV", "sandbox")
+
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./payments.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+    id = Column(String, primary_key=True, index=True)
+    receipt_number = Column(String, index=True, nullable=True)
+    amount = Column(Float)
+    phone = Column(String)
+    status = Column(String, default="PENDING") # PENDING, SUCCESS, FAILED
+    result_desc = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 # ============ Pydantic Models ============
@@ -81,7 +109,7 @@ def health():
 # ============ M-Pesa STK Push ============
 
 @app.post("/mpesa/stk-push")
-def initiate_stk_push(request: PaymentRequest):
+def initiate_stk_push(request: PaymentRequest, db: Session = Depends(get_db)):
     """Initiate M-Pesa STK Push"""
     if not MPESA_CONSUMER_KEY:
         return {"success": False, "error": "M-Pesa not configured"}
@@ -124,9 +152,21 @@ def initiate_stk_push(request: PaymentRequest):
         
         if response.status_code == 200:
             result = response.json()
+            checkout_request_id = result.get("CheckoutRequestID")
+            
+            # Save pending transaction
+            tx = Transaction(
+                id=checkout_request_id,
+                amount=request.amount,
+                phone=phone,
+                status="PENDING"
+            )
+            db.add(tx)
+            db.commit()
+            
             return {
                 "success": True,
-                "checkout_request_id": result.get("CheckoutRequestID"),
+                "checkout_request_id": checkout_request_id,
                 "message": "STK push sent"
             }
         return {"success": False, "error": response.text}
@@ -136,30 +176,56 @@ def initiate_stk_push(request: PaymentRequest):
 
 
 @app.post("/mpesa/callback")
-def mpesa_callback(Body: dict):
+def mpesa_callback(Body: dict, db: Session = Depends(get_db)):
     """Handle M-Pesa callback"""
     try:
         callback = Body.get("stkCallback", {})
         result_code = callback.get("ResultCode")
+        checkout_request_id = callback.get("CheckoutRequestID")
+        result_desc = callback.get("ResultDesc")
+        
+        tx = db.query(Transaction).filter(Transaction.id == checkout_request_id).first()
+        if not tx:
+            tx = Transaction(id=checkout_request_id, status="PENDING")
+            db.add(tx)
+            
+        tx.result_desc = result_desc
         
         if result_code == 0:
             # Payment successful
             metadata = callback.get("CallbackMetadata", {})
             receipt = None
             amount = None
+            phone = None
             
             for item in metadata.get("Item", []):
                 if item.get("Name") == "MpesaReceiptNumber":
                     receipt = item.get("Value")
                 elif item.get("Name") == "Amount":
                     amount = item.get("Value")
+                elif item.get("Name") == "PhoneNumber":
+                    phone = str(item.get("Value"))
+            
+            tx.status = "SUCCESS"
+            tx.receipt_number = receipt
+            if amount: tx.amount = amount
+            if phone: tx.phone = phone
+            db.commit()
             
             # In production: Update order status, release escrow
             return {"status": "success", "receipt": receipt, "amount": amount}
         
+        tx.status = "FAILED"
+        db.commit()
         return {"status": "failed", "code": result_code}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+@app.get("/transactions")
+def get_transactions(db: Session = Depends(get_db)):
+    """Get recent transactions for dashboard"""
+    return db.query(Transaction).order_by(Transaction.created_at.desc()).limit(20).all()
 
 
 @app.post("/mpesa/b2c")

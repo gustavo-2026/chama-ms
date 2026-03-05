@@ -281,7 +281,6 @@ def notify_loan_approved(member_id: str, amount: float):
         body=f"Your loan for KES {amount} has been approved."
     ))
 
-
 @app.post("/transactional/payment-received")
 def notify_payment_received(member_id: str, amount: float, source: str):
     """Notify payment received"""
@@ -292,20 +291,43 @@ def notify_payment_received(member_id: str, amount: float, source: str):
     ))
 
 
+@app.post("/transactional/kula-njama")
+def notify_humor_nudge(org_id: str, to_member: str):
+    """Anonymous Sheng nudge for late payments"""
+    import random
+    nudge_list = [
+        "Wasee, kuna mtu anakaa amekula njama na pesa yetu! 🍖",
+        "Budget ya Mbuzi inapungua... usitufanyie hivyo! 🐐",
+        "Form ni kulipa mapema, usipeleke chama polepole.",
+        "Msimamo ni yule yule: Lipa contribution, tuendelee kukua! 🚀",
+        "Kama unataka kupenya, lazima ufuate system. Lipa deni boss!"
+    ]
+    
+    return send_in_app_notification(NotificationRequest(
+        user_id=to_member,
+        title="Kula Njama Nudge 🍖",
+        body=random.choice(nudge_list)
+    ))
+
+
 # ============ Templates ============
 
 templates = {
     "welcome": {
-        "title": "Welcome to Chama!",
-        "body": "Your chama account is ready. Start contributing!"
+        "title": "Welcome to Chama! 🇰🇪",
+        "body": "Your chama account is ready. Form ni kuanza kusevu sasa hivi!"
     },
     "contribution_reminder": {
-        "title": "Contribution Reminder",
-        "body": "Your monthly contribution is due. Keep your chama strong!"
+        "title": "Contribution Reminder ⏳",
+        "body": "Kumbukumbu: Contribution yako iko karibu. Usituangushe!"
     },
     "meeting_notice": {
-        "title": "Upcoming Meeting",
-        "body": "Chama meeting scheduled. Check your calendar for details."
+        "title": "Upcoming Meeting 📅",
+        "body": "Meeting form imeiva. Toa mawaidha tujenge group!"
+    },
+    "moto_streak": {
+        "title": "Moto Streak! 🔥",
+        "body": "Wewe ni Moto! Umeendelea na on-time payments. Keep it up!"
     }
 }
 

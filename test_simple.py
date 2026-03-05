@@ -8,7 +8,7 @@ services = {
     "payments": "http://localhost:8003",
     "notifications": "http://localhost:8004",
     "messaging": "http://localhost:8005",
-    "kafka": "http://localhost:9093"
+    "kafka": "http://localhost:9092"
 }
 
 print("=== Microservices Health Check ===")
